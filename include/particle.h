@@ -6,7 +6,8 @@
 
 struct Color {
 public:
-	Color(Uint8, Uint8, Uint8, Uint8);
+	Color();
+	Color(Uint32, Uint32, Uint32, Uint32);
 	Uint32 red;
 	Uint32 green;
 	Uint32 blue;
@@ -21,9 +22,12 @@ public:
 	SDL_Renderer* getRenderer();
 	void setBounds(SDL_Rect);
 	SDL_Rect getBounds();
+	SDL_Rect* getBoundsPtr();
 	void setTexture(SDL_Texture*);
 	SDL_Texture* getTexture();
-	virtual bool render();
+	virtual bool render() {
+		return false;
+	};
 
 public:
 	void setPos(Eigen::Vector2f);

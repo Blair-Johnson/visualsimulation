@@ -1,14 +1,23 @@
 #include "../include/particle.h"
 
 
-Color::Color(Uint8 p_r, Uint8 p_g, Uint8 p_b, Uint8 p_a) {
+Color::Color(Uint32 p_r, Uint32 p_g, Uint32 p_b, Uint32 p_a) {
 	red = p_r;
 	green = p_g;
 	blue = p_b;
 	alpha = p_a;
 }
 
+Color::Color() {
+	red = 255;
+	green = 255;
+	blue = 255;
+	alpha = 255;
+}
+
 Object::Object() {};
+
+Object::~Object() {};
 
 float Object::getMass() {
 	return m_m;
@@ -25,8 +34,6 @@ Eigen::Vector2f Object::getVel() {
 SDL_Renderer* Object::getRenderer() {
 	return m_renderer;
 };
-
-bool Object::render() {};
 
 void Object::setMass(float p_m) {
 	m_m = p_m;
@@ -60,6 +67,10 @@ SDL_Rect Object::getBounds() {
 	return m_bbox;
 }
 
+SDL_Rect* Object::getBoundsPtr() {
+	return &m_bbox;
+}
+
 void Object::setTexture(SDL_Texture* p_texture) {
 	m_texture = p_texture;
 }
@@ -86,10 +97,6 @@ void Particle::setRadius(int p_rad) {
 
 int Particle::getRadius() {
 	return m_rad;
-}
-
-bool Particle::render() {
-	return false;
 }
 
 void Particle::step(float dt) {
@@ -160,7 +167,7 @@ bool Particle::render() {
 		srcRect.w = getBounds().w;
 		srcRect.h = getBounds().h;
 
-		SDL_RenderCopy(getRenderer(), getTexture(), &srcRect, &getBounds());
+		SDL_RenderCopy(getRenderer(), getTexture(), &srcRect, getBoundsPtr());
 
 		return true;
 	}
