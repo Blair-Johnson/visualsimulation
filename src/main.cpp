@@ -8,6 +8,7 @@ int main(int argc, char* args[]) {
 		std::cout << "SDL init failed, error: " << SDL_GetError() << std::endl;
 
 	RenderWindow window("Particle Sim v0.1", 1280, 720);
+	window.setColor(48, 48, 48, 255);
 
 	bool running = true;
 	SDL_Event event;
