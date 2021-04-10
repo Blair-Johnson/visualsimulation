@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../include/particle.h"
 
 
@@ -51,6 +53,12 @@ void Object::setFnet(Eigen::Vector2f p_fnet) {
 	m_fnet = p_fnet;
 }
 
+void Object::zeroFnet() {
+	m_fnet.setZero();
+}
+
+void Object::updateFnet() {}
+
 Eigen::Vector2f Object::getFnet() {
 	return m_fnet;
 }
@@ -86,6 +94,7 @@ Particle::Particle(SDL_Renderer* p_renderer, Eigen::Vector2f p_pos, Eigen::Vecto
 	setMass(p_m);
 	setRadius(p_rad);
 	setRenderer(p_renderer);
+	setFnet(Eigen::Vector2f::Zero());
 	setColor(0, 204, 153, 255);
 
 	computeBounds();
@@ -98,6 +107,17 @@ void Particle::setRadius(int p_rad) {
 
 int Particle::getRadius() {
 	return m_rad;
+}
+
+
+void Particle::updateFnet(Particle* p_particle) {
+	Eigen::Vector2f t_fnet = getFnet();
+	Eigen::Vector2f r_vec = p_particle->getPos() - getPos();
+	float r_mag = r_vec.squaredNorm();
+	r_vec /= r_vec.norm();
+	r_vec = 1e6*(getMass() * p_particle->getMass()) / (r_mag + 1e-2) * r_vec;
+	setFnet(t_fnet + r_vec);
+	p_particle->setFnet(p_particle->getFnet() - r_vec);
 }
 
 void Particle::step(float dt) {

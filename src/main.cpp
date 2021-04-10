@@ -24,14 +24,14 @@ int main(int argc, char* args[]) {
 
 	// init 100 random particles
 	std::vector<Particle> particleList;
-	int radius = 10;
-	int numParticles = 100;
+	int radius = 5;
+	int numParticles = 10;
 	for (int i = 0; i < numParticles; i++) {
 		float x = rand() % (WINDOW_W - 1 - 2 * radius) + radius;
 		float y = rand() % (WINDOW_H - 1 - 2 * radius) + radius;
 		Eigen::Vector2f t_pos = Eigen::Vector2f( x, y );
 		Eigen::Vector2f t_vel = Eigen::Vector2f::Random()*100;
-		Particle t_particle = Particle(window.getRenderer(), t_pos, t_vel, 10.0, radius);
+		Particle t_particle = Particle(window.getRenderer(), t_pos, t_vel, 1.0, radius);
 		particleList.push_back(t_particle);
 	}
 
@@ -54,11 +54,18 @@ int main(int argc, char* args[]) {
 		window.renderClear();
 		window.setColor(48, 48, 48, 255);
 		for (int i = 0; i < numParticles; i++) {
+			particleList[i].zeroFnet();
+		}
+		for (int i = 0; i < numParticles; i++) {
+			for (int j = i+1; j < numParticles; j++)
+				particleList[i].updateFnet(&particleList[j]);
+		}
+		for (int i = 0; i < numParticles; i++) {
 			particleList[i].step(0.01);
 			particleList[i].render();
 		}
+		Sleep(16);
 		window.update();
-		Sleep(10);
 		auto stop = std::chrono::steady_clock::now();
 		std::cout << "Loop: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - lstart).count() << "ms" << std::endl;
 	}

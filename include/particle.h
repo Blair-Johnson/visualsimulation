@@ -34,6 +34,8 @@ public:
 	void setVel(Eigen::Vector2f);
 	void setMass(float);
 	void setFnet(Eigen::Vector2f);
+	void zeroFnet();
+	virtual void updateFnet();
 	Eigen::Vector2f getFnet();
 	Eigen::Vector2f getPos();
 	Eigen::Vector2f getVel();
@@ -59,6 +61,7 @@ public:
 	void setRadius(int);
 	int getRadius();
 	void step(float);
+	void updateFnet(Particle*);
 
 private:
 	void computeBounds();
