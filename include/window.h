@@ -4,11 +4,11 @@
 class RenderWindow
 {
 public:
-	RenderWindow(const char* title, int w, int h);
-	void setColor(int r, int g, int b, int a);
+	RenderWindow(const char*, int, int);
+	void setColor(int, int, int, int);
 	void cleanUp();
 private:
-	SDL_Window* window;
-	SDL_Renderer* renderer;
+	SDL_Window* m_window;
+	SDL_Renderer* m_renderer;
 };
 

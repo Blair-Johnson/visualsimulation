@@ -1,25 +1,25 @@
 #include <iostream>
 #include "../include/window.h"
 
-RenderWindow::RenderWindow(const char* title, int w, int h)
-	:window(NULL), renderer(NULL)
+RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
+	:m_window(NULL), m_renderer(NULL)
 {
-	this->window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h,
+	m_window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, p_w, p_h,
 		SDL_WINDOW_SHOWN);
 
-	if (window == NULL)
+	if (m_window == NULL)
 		std::cout << "Window failed to init, error: " << SDL_GetError() << std::endl;
 
-	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
+	m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
 }
 
 void RenderWindow::cleanUp()
 {
-	SDL_DestroyWindow(this->window);
+	SDL_DestroyWindow(m_window);
 }
 
-void RenderWindow::setColor(int r, int g, int b, int a) {
-	SDL_SetRenderDrawColor(this->renderer, r, g, b, a);
-	SDL_RenderClear(this->renderer);
-	SDL_RenderPresent(this->renderer);
+void RenderWindow::setColor(int p_r, int p_g, int p_b, int p_a) {
+	SDL_SetRenderDrawColor(m_renderer, p_r, p_g, p_b, p_a);
+	SDL_RenderClear(m_renderer);
+	SDL_RenderPresent(m_renderer);
 }
