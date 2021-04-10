@@ -21,6 +21,7 @@ void RenderWindow::cleanUp()
 void RenderWindow::setColor(int p_r, int p_g, int p_b, int p_a) {
 	SDL_SetRenderDrawColor(m_renderer, p_r, p_g, p_b, p_a);
 	SDL_RenderClear(m_renderer);
+	update();
 }
 
 void RenderWindow::update() {

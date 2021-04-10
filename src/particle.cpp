@@ -85,6 +85,7 @@ Particle::Particle(SDL_Renderer* p_renderer, Eigen::Vector2f p_pos, Eigen::Vecto
 	setVel(p_vel);
 	setMass(p_m);
 	setRadius(p_rad);
+	setRenderer(p_renderer);
 	setColor(0, 204, 153, 255);
 
 	computeBounds();

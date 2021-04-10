@@ -26,8 +26,8 @@ int main(int argc, char* args[]) {
 
 	// init 100 random particles
 	std::vector<Particle> particleList;
-	int radius = 10;
-	int numParticles = 100;
+	int radius = 3;
+	int numParticles = 1000;
 	for (int i = 0; i < numParticles; i++) {
 		float x = rand() % (WINDOW_W - 1 - 2 * radius) + radius;
 		float y = rand() % (WINDOW_H - 1 - 2 * radius) + radius;
@@ -39,10 +39,12 @@ int main(int argc, char* args[]) {
 	for (int i = 0; i < numParticles; i++) {
 		particleList[i].render();
 	}
+	window.update();
 	auto end = std::chrono::steady_clock::now();
+	
 
 	std::cout << "Drawing Took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
-	window.update();
+	
 	while (running) {
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT)
