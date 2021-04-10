@@ -62,6 +62,7 @@ public:
 	int getRadius();
 	void step(float);
 	void updateFnet(Particle*);
+	void checkLimits(int, int);
 
 private:
 	void computeBounds();

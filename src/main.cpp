@@ -24,14 +24,18 @@ int main(int argc, char* args[]) {
 
 	// init 100 random particles
 	std::vector<Particle> particleList;
-	int radius = 5;
-	int numParticles = 10;
+	int radius = 3;
+	int numParticles = 60;
 	for (int i = 0; i < numParticles; i++) {
 		float x = rand() % (WINDOW_W - 1 - 2 * radius) + radius;
 		float y = rand() % (WINDOW_H - 1 - 2 * radius) + radius;
+		int m = 1;
+		//if (i % 2 == 0) {
+		//	m *= -1;
+		//}
 		Eigen::Vector2f t_pos = Eigen::Vector2f( x, y );
-		Eigen::Vector2f t_vel = Eigen::Vector2f::Random()*100;
-		Particle t_particle = Particle(window.getRenderer(), t_pos, t_vel, 1.0, radius);
+		Eigen::Vector2f t_vel = Eigen::Vector2f::Random()*1000;
+		Particle t_particle = Particle(window.getRenderer(), t_pos, t_vel, m, radius);
 		particleList.push_back(t_particle);
 	}
 
@@ -43,7 +47,7 @@ int main(int argc, char* args[]) {
 	auto end = std::chrono::steady_clock::now();
 	
 
-	std::cout << "Drawing Took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
+	//std::cout << "Drawing Took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
 	
 	while (running) {
 		while (SDL_PollEvent(&event)) {
@@ -62,12 +66,13 @@ int main(int argc, char* args[]) {
 		}
 		for (int i = 0; i < numParticles; i++) {
 			particleList[i].step(0.01);
+			particleList[i].checkLimits(1280 - 1, 720 - 1);
 			particleList[i].render();
 		}
-		Sleep(16);
+		//Sleep(5);
 		window.update();
 		auto stop = std::chrono::steady_clock::now();
-		std::cout << "Loop: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - lstart).count() << "ms" << std::endl;
+		//std::cout << "Loop: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - lstart).count() << "ms" << std::endl;
 	}
 
 	window.cleanUp();
