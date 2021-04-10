@@ -3,6 +3,7 @@
 #include <time.h>
 #include <vector>
 #include <chrono>
+#include <Windows.h>
 
 #include "../include/window.h"
 #include "../include/particle.h"
@@ -14,28 +15,27 @@ int main(int argc, char* args[]) {
 		std::cout << "SDL init failed, error: " << SDL_GetError() << std::endl;
 
 	RenderWindow window("Particle Sim v0.1", WINDOW_W, WINDOW_H);
-	window.setColor(48, 48, 48, 255);
 
 	// random seed
 	srand(time(NULL));
-	// start time
-	auto start = std::chrono::steady_clock::now();
 
 	bool running = true;
 	SDL_Event event;
 
 	// init 100 random particles
 	std::vector<Particle> particleList;
-	int radius = 3;
-	int numParticles = 1000;
+	int radius = 10;
+	int numParticles = 100;
 	for (int i = 0; i < numParticles; i++) {
 		float x = rand() % (WINDOW_W - 1 - 2 * radius) + radius;
 		float y = rand() % (WINDOW_H - 1 - 2 * radius) + radius;
 		Eigen::Vector2f t_pos = Eigen::Vector2f( x, y );
-		Particle t_particle = Particle(window.getRenderer(), t_pos, t_pos, 10.0, radius);
+		Eigen::Vector2f t_vel = Eigen::Vector2f::Random()*100;
+		Particle t_particle = Particle(window.getRenderer(), t_pos, t_vel, 10.0, radius);
 		particleList.push_back(t_particle);
 	}
 
+	auto start = std::chrono::steady_clock::now();
 	for (int i = 0; i < numParticles; i++) {
 		particleList[i].render();
 	}
@@ -50,6 +50,17 @@ int main(int argc, char* args[]) {
 			if (event.type == SDL_QUIT)
 				running = false;
 		}
+		auto lstart = std::chrono::steady_clock::now();
+		window.renderClear();
+		window.setColor(48, 48, 48, 255);
+		for (int i = 0; i < numParticles; i++) {
+			particleList[i].step(0.01);
+			particleList[i].render();
+		}
+		window.update();
+		Sleep(10);
+		auto stop = std::chrono::steady_clock::now();
+		std::cout << "Loop: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - lstart).count() << "ms" << std::endl;
 	}
 
 	window.cleanUp();

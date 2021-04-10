@@ -105,6 +105,7 @@ void Particle::step(float dt) {
 	Eigen::Vector2f dv = getFnet()/getMass() * dt;
 	setVel(getVel() + dv);
 	setPos(getPos() + getVel() * dt);
+	computeBounds();
 }
 
 void Particle::update() {

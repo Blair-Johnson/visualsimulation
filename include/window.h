@@ -9,6 +9,7 @@ public:
 	SDL_Renderer* getRenderer();
 	void update();
 	void cleanUp();
+	void renderClear();
 private:
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;

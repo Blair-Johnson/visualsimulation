@@ -58,11 +58,11 @@ public:
 	bool render();
 	void setRadius(int);
 	int getRadius();
+	void step(float);
 
 private:
 	void computeBounds();
 	void update();
-	void step(float);
 	int m_rad;
 	Color m_color;
 
