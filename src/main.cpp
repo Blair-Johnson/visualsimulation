@@ -45,14 +45,20 @@ int main(int argc, char* args[]) {
 	}
 	window.update();
 	auto end = std::chrono::steady_clock::now();
+
+	Particle mouse_point = Particle(window.getRenderer(), Eigen::Vector2f(0,0), Eigen::Vector2f(0,0), 10, 3);
 	
 
 	//std::cout << "Drawing Took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
 	// coefficients
 	int atr = 1;
+	int mouse_atr = 1;
+	int mouse_x, mouse_y = 0;
 	bool gravity = false;
 	float damping = 0.5;
 	float interaction_coeff = 0.5e6;
+	float mouse_interaction_coeff = 0.5e6;
+	float min_interaction_dist = 3;
 
 
 	while (running) {
@@ -91,14 +97,43 @@ int main(int argc, char* args[]) {
 				}
 				case SDLK_k: {
 					interaction_coeff += 1e5;
-					std::cout << "+Innteraction Coeff: " << interaction_coeff << std::endl;
+					std::cout << "+Interaction Coeff: " << interaction_coeff << std::endl;
 					break;
 				}
 				case SDLK_m: {
 					if (interaction_coeff - 1e5 >= 0) {
 						interaction_coeff -= 1e5;
 					}
-					std::cout << "-Innteraction Coeff: " << interaction_coeff << std::endl;
+					std::cout << "-Interaction Coeff: " << interaction_coeff << std::endl;
+					break;
+				}
+				case SDLK_c: {
+					mouse_atr *= -1;
+					std::cout << "Toggle Mouse Attract" << std::endl;
+					break;
+				}
+				case SDLK_x: {
+					if (mouse_interaction_coeff - 1e5 >= 0) {
+						mouse_interaction_coeff -= 1e5;
+					}
+					std::cout << "-Mouse Interaction Coeff: " << mouse_interaction_coeff << std::endl;
+					break;
+				}
+				case SDLK_z: {
+					mouse_interaction_coeff += 1e5;
+					std::cout << "+Mouse Interaction Coeff: " << mouse_interaction_coeff << std::endl;
+					break;
+				}
+				case SDLK_DOWN: {
+					if (min_interaction_dist - 0.1 >= 0) {
+						min_interaction_dist -= 0.1;
+					}
+					std::cout << "-Min Interaction Dist: " << min_interaction_dist << std::endl;
+					break;
+				}
+				case SDLK_UP: {
+					min_interaction_dist += 0.1;
+					std::cout << "+Min Interaction Dist: " << min_interaction_dist << std::endl;
 					break;
 				}
 				default:
@@ -113,12 +148,15 @@ int main(int argc, char* args[]) {
 		auto lstart = std::chrono::steady_clock::now();
 		window.renderClear();
 		window.setColor(48, 48, 48, 255);
+		SDL_GetMouseState(&mouse_x, &mouse_y);
+		mouse_point.setPos(Eigen::Vector2f(mouse_x, mouse_y));
 		for (int i = 0; i < numParticles; i++) {
 			particleList[i].zeroFnet();
 		}
 		for (int i = 0; i < numParticles; i++) {
+			particleList[i].updateFnet(&mouse_point, mouse_atr, mouse_interaction_coeff, min_interaction_dist);
 			for (int j = i+1; j < numParticles; j++)
-				particleList[i].updateFnet(&particleList[j], atr, interaction_coeff);
+				particleList[i].updateFnet(&particleList[j], atr, interaction_coeff, min_interaction_dist);
 		}
 		for (int i = 0; i < numParticles; i++) {
 			particleList[i].step(0.01, gravity, damping);

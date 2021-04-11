@@ -110,12 +110,12 @@ int Particle::getRadius() {
 }
 
 
-void Particle::updateFnet(Particle* p_particle, int p_atr, float p_coeff) {
+void Particle::updateFnet(Particle* p_particle, int p_atr, float p_coeff, float min_int_dist) {
 	Eigen::Vector2f t_fnet = getFnet();
 	Eigen::Vector2f r_vec = p_particle->getPos() - getPos();
 	float r_mag = r_vec.squaredNorm();
 	r_vec /= r_vec.norm();
-	r_vec = p_atr*p_coeff*(getMass() * p_particle->getMass()) / (r_mag + 3*getRadius()) * r_vec;
+	r_vec = p_atr*p_coeff*(getMass() * p_particle->getMass()) / (r_mag + min_int_dist*getRadius()) * r_vec;
 	setFnet(t_fnet + r_vec);
 	p_particle->setFnet(p_particle->getFnet() - r_vec);
 }
@@ -129,9 +129,9 @@ void Particle::checkLimits(int p_w, int p_h) {
 		setVel(t_vel);
 		setPos(pos);
 	}
-	else if (pos[0] <= 0) {
+	else if (pos[0] <= 2) {
 		t_vel[0] *= -0.98;
-		pos[0] = 2;
+		pos[0] = 3;
 		setVel(t_vel);
 	}
 	pos = getPos();

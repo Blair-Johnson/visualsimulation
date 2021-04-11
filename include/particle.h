@@ -61,7 +61,7 @@ public:
 	void setRadius(int);
 	int getRadius();
 	void step(float, bool, float);
-	void updateFnet(Particle*, int, float);
+	void updateFnet(Particle*, int, float, float);
 	void checkLimits(int, int);
 
 private:
