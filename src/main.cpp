@@ -48,11 +48,67 @@ int main(int argc, char* args[]) {
 	
 
 	//std::cout << "Drawing Took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
-	
+	// coefficients
+	int atr = 1;
+	bool gravity = false;
+	float damping = 0.5;
+	float interaction_coeff = 0.5e6;
+
+
 	while (running) {
 		while (SDL_PollEvent(&event)) {
-			if (event.type == SDL_QUIT)
+			switch (event.type) {
+			case SDL_QUIT:
 				running = false;
+			case SDL_KEYDOWN: {
+				switch (event.key.keysym.sym) {
+				case SDLK_a: {
+					atr = 1;
+					std::cout << "Attract" << std::endl;
+					break;
+				}
+				case SDLK_r: {
+					atr = -1;
+					std::cout << "Repel" << std::endl;
+					break;
+				}
+				case SDLK_g: {
+					gravity = !gravity;
+					std::cout << "Gravity: " << gravity << std::endl;
+					break;
+				}
+				case SDLK_d: {
+					damping += 0.1;
+					std::cout << "+Damping: " << damping << std::endl;
+					break;
+				}
+				case SDLK_v: {
+					if (damping - 0.1 >= 0) {
+						damping -= 0.1;
+					}
+					std::cout << "-Damping: " << damping << std::endl;
+					break;
+				}
+				case SDLK_k: {
+					interaction_coeff += 1e5;
+					std::cout << "+Innteraction Coeff: " << interaction_coeff << std::endl;
+					break;
+				}
+				case SDLK_m: {
+					if (interaction_coeff - 1e5 >= 0) {
+						interaction_coeff -= 1e5;
+					}
+					std::cout << "-Innteraction Coeff: " << interaction_coeff << std::endl;
+					break;
+				}
+				default:
+					break;
+				}
+				break;
+			}
+			default:
+				break;
+			}
 		}
 		auto lstart = std::chrono::steady_clock::now();
 		window.renderClear();
@@ -62,10 +118,10 @@ int main(int argc, char* args[]) {
 		}
 		for (int i = 0; i < numParticles; i++) {
 			for (int j = i+1; j < numParticles; j++)
-				particleList[i].updateFnet(&particleList[j]);
+				particleList[i].updateFnet(&particleList[j], atr, interaction_coeff);
 		}
 		for (int i = 0; i < numParticles; i++) {
-			particleList[i].step(0.01);
+			particleList[i].step(0.01, gravity, damping);
 			particleList[i].checkLimits(1280 - 1, 720 - 1);
 			particleList[i].render();
 		}

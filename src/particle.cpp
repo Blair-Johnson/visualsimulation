@@ -110,12 +110,12 @@ int Particle::getRadius() {
 }
 
 
-void Particle::updateFnet(Particle* p_particle) {
+void Particle::updateFnet(Particle* p_particle, int p_atr, float p_coeff) {
 	Eigen::Vector2f t_fnet = getFnet();
 	Eigen::Vector2f r_vec = p_particle->getPos() - getPos();
 	float r_mag = r_vec.squaredNorm();
 	r_vec /= r_vec.norm();
-	r_vec = -0.5e6*(getMass() * p_particle->getMass()) / (r_mag + 3*getRadius()) * r_vec;
+	r_vec = p_atr*p_coeff*(getMass() * p_particle->getMass()) / (r_mag + 3*getRadius()) * r_vec;
 	setFnet(t_fnet + r_vec);
 	p_particle->setFnet(p_particle->getFnet() - r_vec);
 }
@@ -131,7 +131,7 @@ void Particle::checkLimits(int p_w, int p_h) {
 	}
 	else if (pos[0] <= 0) {
 		t_vel[0] *= -0.98;
-		pos[0] = 1;
+		pos[0] = 2;
 		setVel(t_vel);
 	}
 	pos = getPos();
@@ -144,17 +144,19 @@ void Particle::checkLimits(int p_w, int p_h) {
 	}
 	else if (pos[1] <= 0) {
 		t_vel[1] *= -0.98;
-		pos[1] = 1;
+		pos[1] = 2;
 		setVel(t_vel);
 		setPos(pos);
 	}
 }
 
-void Particle::step(float dt) {
+void Particle::step(float dt, bool gravity, float p_damping) {
 	//physics goes here
 	Eigen::Vector2f grav(0, 5e2 * getMass());
-	grav.setZero();
-	Eigen::Vector2f dv = (getFnet() - .5*getVel() + grav)/getMass() * dt;
+	if (!gravity) {
+		grav.setZero();
+	}
+	Eigen::Vector2f dv = (getFnet() - p_damping * getVel() + grav)/getMass() * dt;
 	setVel(getVel() + dv);
 	setPos(getPos() + getVel() * dt);
 	computeBounds();

@@ -60,8 +60,8 @@ public:
 	bool render();
 	void setRadius(int);
 	int getRadius();
-	void step(float);
-	void updateFnet(Particle*);
+	void step(float, bool, float);
+	void updateFnet(Particle*, int, float);
 	void checkLimits(int, int);
 
 private:
