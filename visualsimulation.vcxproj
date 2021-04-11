@@ -149,6 +149,8 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\particle.cpp" />
+    <ClCompile Include="src\particleManager.cpp" />
+    <ClCompile Include="src\quadtree.cpp" />
     <ClCompile Include="src\window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +158,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\particle.h" />
+    <ClInclude Include="include\particleManager.h" />
+    <ClInclude Include="include\quadtree.h" />
     <ClInclude Include="include\window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
