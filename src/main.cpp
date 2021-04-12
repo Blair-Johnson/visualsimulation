@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL.h>
+#include <GLFW/glfw3.h>
 #include <time.h>
 #include <vector>
 #include <chrono>
@@ -10,16 +11,25 @@
 #include "../include/particleManager.h"
 
 int main(int argc, char* args[]) {
+	GLFWwindow* window;
 
 	int WINDOW_W = 1280;
 	int WINDOW_H = 720;
-	if (SDL_Init(SDL_INIT_VIDEO) > 0)
-		std::cout << "SDL init failed, error: " << SDL_GetError() << std::endl;
 
-	RenderWindow window("Particle Sim v0.1", WINDOW_W, WINDOW_H);
+	if (!glfwInit()) {
+		return -1;
+	}
+
+	window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Particle Sim v0.2", NULL, NULL);
+	if (!window) {
+		glfwTerminate();
+		return -1;
+	}
+
+	//RenderWindow window("Particle Sim v0.1", WINDOW_W, WINDOW_H);
 
 	// random seed
-	srand(time(NULL));
+	//srand(time(NULL));
 
 	bool running = true;
 	SDL_Event event;
