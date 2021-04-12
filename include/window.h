@@ -10,8 +10,12 @@ public:
 	void update();
 	void cleanUp();
 	void renderClear();
+	int getWidth();
+	int getHeight();
 private:
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
+	int m_height;
+	int m_width;
 };
 

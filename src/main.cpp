@@ -7,6 +7,7 @@
 
 #include "../include/window.h"
 #include "../include/particle.h"
+#include "../include/particleManager.h"
 
 int main(int argc, char* args[]) {
 	int WINDOW_W = 1280;
@@ -22,26 +23,13 @@ int main(int argc, char* args[]) {
 	bool running = true;
 	SDL_Event event;
 
-	// init 100 random particles
-	std::vector<Particle> particleList;
-	int radius = 3;
+	// init random particles in manager
 	int numParticles = 60;
-	for (int i = 0; i < numParticles; i++) {
-		float x = rand() % (WINDOW_W - 1 - 2 * radius) + radius;
-		float y = rand() % (WINDOW_H - 1 - 2 * radius) + radius;
-		int m = 1;
-		//if (i % 2 == 0) {
-		//	m *= -1;
-		//}
-		Eigen::Vector2f t_pos = Eigen::Vector2f( x, y );
-		Eigen::Vector2f t_vel = Eigen::Vector2f::Random()*1000;
-		Particle t_particle = Particle(window.getRenderer(), t_pos, t_vel, m, radius);
-		particleList.push_back(t_particle);
-	}
+	ParticleManager manager(&window, numParticles);
 
 	auto start = std::chrono::steady_clock::now();
 	for (int i = 0; i < numParticles; i++) {
-		particleList[i].render();
+		manager.particleList[i].render();
 	}
 	window.update();
 	auto end = std::chrono::steady_clock::now();
@@ -146,27 +134,28 @@ int main(int argc, char* args[]) {
 			}
 		}
 		auto lstart = std::chrono::steady_clock::now();
-		window.renderClear();
-		window.setColor(48, 48, 48, 255);
 		SDL_GetMouseState(&mouse_x, &mouse_y);
 		mouse_point.setPos(Eigen::Vector2f(mouse_x, mouse_y));
 		for (int i = 0; i < numParticles; i++) {
-			particleList[i].zeroFnet();
+			manager.particleList[i].zeroFnet();
 		}
 		for (int i = 0; i < numParticles; i++) {
-			particleList[i].updateFnet(&mouse_point, mouse_atr, mouse_interaction_coeff, min_interaction_dist);
+			manager.particleList[i].updateFnet(&mouse_point, mouse_atr, mouse_interaction_coeff, min_interaction_dist);
 			for (int j = i+1; j < numParticles; j++)
-				particleList[i].updateFnet(&particleList[j], atr, interaction_coeff, min_interaction_dist);
+				manager.particleList[i].updateFnet(&manager.particleList[j], atr, interaction_coeff, min_interaction_dist);
 		}
+		auto rdrstart = std::chrono::steady_clock::now();
+		window.renderClear();
+		window.setColor(48, 48, 48, 255);
 		for (int i = 0; i < numParticles; i++) {
-			particleList[i].step(0.01, gravity, damping);
-			particleList[i].checkLimits(1280 - 1, 720 - 1);
-			particleList[i].render();
+			manager.particleList[i].step(0.01, gravity, damping);
+			manager.particleList[i].checkLimits(1280 - 1, 720 - 1);
+			manager.particleList[i].render();
 		}
 		//Sleep(5);
 		window.update();
 		auto stop = std::chrono::steady_clock::now();
-		//std::cout << "Loop: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - lstart).count() << "ms" << std::endl;
+		//std::cout << "Loop: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - rdrstart).count() << "ms" << std::endl;
 	}
 
 	window.cleanUp();

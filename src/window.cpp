@@ -2,7 +2,7 @@
 #include "../include/window.h"
 
 RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
-	:m_window(NULL), m_renderer(NULL)
+	:m_window(NULL), m_renderer(NULL), m_width(p_w), m_height(p_h)
 {
 	m_window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, p_w, p_h,
 		SDL_WINDOW_SHOWN);
@@ -32,4 +32,12 @@ void RenderWindow::update() {
 
 SDL_Renderer* RenderWindow::getRenderer() {
 	return m_renderer;
+}
+
+int RenderWindow::getWidth() {
+	return m_width;
+}
+
+int RenderWindow::getHeight() {
+	return m_height;
 }
