@@ -20,7 +20,6 @@ int main(int argc, char* args[]) {
 		return -1;
 	}
 
-	glewInit();
 
 	window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Particle Sim v0.2", NULL, NULL);
 	if (!window) {
@@ -29,6 +28,10 @@ int main(int argc, char* args[]) {
 	}
 
 	glfwMakeContextCurrent(window);
+
+	if (glewInit() != GLEW_OK) {
+		std::cout << "Glew Error" << std::endl;
+	}
 
 	while (!glfwWindowShouldClose(window)) {
 		// render
