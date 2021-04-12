@@ -5,6 +5,7 @@ class RenderWindow
 {
 public:
 	RenderWindow(const char*, int, int);
+	~RenderWindow();
 	void setColor(int, int, int, int);
 	SDL_Renderer* getRenderer();
 	void update();

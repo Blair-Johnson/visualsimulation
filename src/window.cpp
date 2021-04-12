@@ -41,3 +41,5 @@ int RenderWindow::getWidth() {
 int RenderWindow::getHeight() {
 	return m_height;
 }
+
+RenderWindow::~RenderWindow() {};

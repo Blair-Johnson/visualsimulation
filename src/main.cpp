@@ -10,6 +10,7 @@
 #include "../include/particleManager.h"
 
 int main(int argc, char* args[]) {
+
 	int WINDOW_W = 1280;
 	int WINDOW_H = 720;
 	if (SDL_Init(SDL_INIT_VIDEO) > 0)
@@ -133,18 +134,23 @@ int main(int argc, char* args[]) {
 				break;
 			}
 		}
-		auto lstart = std::chrono::steady_clock::now();
+		
 		SDL_GetMouseState(&mouse_x, &mouse_y);
 		mouse_point.setPos(Eigen::Vector2f(mouse_x, mouse_y));
-		for (int i = 0; i < numParticles; i++) {
-			manager.particleList[i].zeroFnet();
-		}
+		//auto lstart = std::chrono::steady_clock::now();
+		manager.zeroForces();
+		//auto l1 = std::chrono::steady_clock::now();
+		//manager.zeroForcesThreaded();
+		//auto l2 = std::chrono::steady_clock::now();
+		//std::cout << "Unthreaded: " << std::chrono::duration_cast<std::chrono::milliseconds>(lstart - l1).count() << "ms" << std::endl;
+		//std::cout << "Threaded: " << std::chrono::duration_cast<std::chrono::milliseconds>(l2 - l1).count() << "ms" << std::endl;
+
 		for (int i = 0; i < numParticles; i++) {
 			manager.particleList[i].updateFnet(&mouse_point, mouse_atr, mouse_interaction_coeff, min_interaction_dist);
 			for (int j = i+1; j < numParticles; j++)
 				manager.particleList[i].updateFnet(&manager.particleList[j], atr, interaction_coeff, min_interaction_dist);
 		}
-		auto rdrstart = std::chrono::steady_clock::now();
+		//auto rdrstart = std::chrono::steady_clock::now();
 		window.renderClear();
 		window.setColor(48, 48, 48, 255);
 		for (int i = 0; i < numParticles; i++) {
@@ -154,7 +160,7 @@ int main(int argc, char* args[]) {
 		}
 		//Sleep(5);
 		window.update();
-		auto stop = std::chrono::steady_clock::now();
+		//auto stop = std::chrono::steady_clock::now();
 		//std::cout << "Loop: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - rdrstart).count() << "ms" << std::endl;
 	}
 

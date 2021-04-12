@@ -54,7 +54,9 @@ void Object::setFnet(Eigen::Vector2f p_fnet) {
 }
 
 void Object::zeroFnet() {
-	m_fnet.setZero();
+	//m_fnet.Zero();
+	m_fnet[0] = 0;
+	m_fnet[1] = 0;
 }
 
 void Object::updateFnet() {}
