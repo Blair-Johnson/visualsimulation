@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include <thread>
-#include <mutex>
 #include <iostream>
 #include "particle.h"
 #include "window.h"
@@ -14,13 +13,14 @@ public:
 	~ParticleManager();
 	void zeroForces();
 	void zeroForcesThreaded();
-	void updateForces();
+	void updateStep(float, int, float);
+	void renderParticles();
+	void updateForces(Particle, int, int, float, float, float);
 	void drawNewPos();
 	
 public:
 	void threadZeroRange(Particle*, Particle*);
 	std::vector <Particle> particleList;
 	RenderWindow* m_window;
-	std::mutex m_mutex;
 
 };

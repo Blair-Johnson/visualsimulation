@@ -58,3 +58,24 @@ void ParticleManager::zeroForces() {
 		particleList[i].zeroFnet();
 	}
 }
+
+void ParticleManager::updateForces(Particle p_mouse, int atr, int mouse_atr, float interaction_coeff, float mouse_interaction_coeff, float min_interaction_dist) {
+	for (int i = 0; i < particleList.size(); ++i) {
+		particleList[i].updateFnet(&p_mouse, mouse_atr, mouse_interaction_coeff, min_interaction_dist);
+		for (int j = i + 1; j < particleList.size(); j++)
+			particleList[i].updateFnet(&particleList[j], atr, interaction_coeff, min_interaction_dist);
+	}
+}
+
+void ParticleManager::updateStep(float dt, int gravity, float damping) {
+	for (int i = 0; i < particleList.size(); ++i) {
+		particleList[i].step(0.01, gravity, damping);
+		particleList[i].checkLimits(m_window->getWidth() - 1, m_window->getHeight() - 1);
+	}
+}
+
+void ParticleManager::renderParticles() {
+	for (int i = 0; i < particleList.size(); ++i) {
+		particleList[i].render();
+	}
+}

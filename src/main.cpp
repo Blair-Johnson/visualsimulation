@@ -145,20 +145,12 @@ int main(int argc, char* args[]) {
 		//std::cout << "Unthreaded: " << std::chrono::duration_cast<std::chrono::milliseconds>(lstart - l1).count() << "ms" << std::endl;
 		//std::cout << "Threaded: " << std::chrono::duration_cast<std::chrono::milliseconds>(l2 - l1).count() << "ms" << std::endl;
 
-		for (int i = 0; i < numParticles; i++) {
-			manager.particleList[i].updateFnet(&mouse_point, mouse_atr, mouse_interaction_coeff, min_interaction_dist);
-			for (int j = i+1; j < numParticles; j++)
-				manager.particleList[i].updateFnet(&manager.particleList[j], atr, interaction_coeff, min_interaction_dist);
-		}
+		manager.updateForces(mouse_point, atr, mouse_atr, interaction_coeff, mouse_interaction_coeff, min_interaction_dist);
 		//auto rdrstart = std::chrono::steady_clock::now();
 		window.renderClear();
 		window.setColor(48, 48, 48, 255);
-		for (int i = 0; i < numParticles; i++) {
-			manager.particleList[i].step(0.01, gravity, damping);
-			manager.particleList[i].checkLimits(1280 - 1, 720 - 1);
-			manager.particleList[i].render();
-		}
-		//Sleep(5);
+		manager.updateStep(0.01, gravity, damping);
+		manager.renderParticles();
 		window.update();
 		//auto stop = std::chrono::steady_clock::now();
 		//std::cout << "Loop: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - rdrstart).count() << "ms" << std::endl;
