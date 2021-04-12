@@ -5,23 +5,29 @@
 
 class TreeNode {
 public:
-	TreeNode(std::vector<Particle*>, float, float, float, float);
+	TreeNode(std::vector<Particle*>, std::tuple<float,float>, std::tuple<float,float>);
+	~TreeNode();
+	void findCenter();
 public:
 	TreeNode* headNode;
 	TreeNode* m_subnodes[4];
 	std::vector<Particle*> m_particles;
 	Eigen::Vector2f m_com;
+	Eigen::Vector2f m_mean;
 	float m_mass;
-	float xmin, xmax, ymin, ymax;
+	std::tuple<float, float> x_interval, y_interval;
 };
 
-class Quadtree {
+class QuadTree {
 public:
-	Quadtree();
+	QuadTree();
+	~QuadTree();
 	void addElements(std::vector<Particle>);
-	void update();
+	void updateForces();
 private:
-	void split();
+	void indexElements();
+	void distribute();
 	TreeNode* headNode;
 	std::vector<Particle> particleList;
+	std::vector<Particle*> particlePointers;
 };

@@ -25,7 +25,7 @@ int main(int argc, char* args[]) {
 	SDL_Event event;
 
 	// init random particles in manager
-	int numParticles = 60;
+	int numParticles = 90;
 	ParticleManager manager(&window, numParticles);
 
 	auto start = std::chrono::steady_clock::now();
@@ -137,7 +137,7 @@ int main(int argc, char* args[]) {
 		
 		SDL_GetMouseState(&mouse_x, &mouse_y);
 		mouse_point.setPos(Eigen::Vector2f(mouse_x, mouse_y));
-		//auto lstart = std::chrono::steady_clock::now();
+		auto lstart = std::chrono::steady_clock::now();
 		manager.zeroForces();
 		//auto l1 = std::chrono::steady_clock::now();
 		//manager.zeroForcesThreaded();
@@ -146,14 +146,16 @@ int main(int argc, char* args[]) {
 		//std::cout << "Threaded: " << std::chrono::duration_cast<std::chrono::milliseconds>(l2 - l1).count() << "ms" << std::endl;
 
 		manager.updateForces(mouse_point, atr, mouse_atr, interaction_coeff, mouse_interaction_coeff, min_interaction_dist);
-		//auto rdrstart = std::chrono::steady_clock::now();
+
 		window.renderClear();
 		window.setColor(48, 48, 48, 255);
 		manager.updateStep(0.01, gravity, damping);
+		auto rdrstart = std::chrono::steady_clock::now();
 		manager.renderParticles();
 		window.update();
-		//auto stop = std::chrono::steady_clock::now();
-		//std::cout << "Loop: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - rdrstart).count() << "ms" << std::endl;
+		auto stop = std::chrono::steady_clock::now();
+		std::cout << "Calculations: " << std::chrono::duration_cast<std::chrono::milliseconds>(rdrstart - lstart).count() << "ms" << std::endl;
+		std::cout << "Render: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - rdrstart).count() << "ms" << std::endl;
 	}
 
 	window.cleanUp();
