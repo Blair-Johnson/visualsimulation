@@ -1,14 +1,14 @@
-#include <iostream>
-#include <SDL.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
 #include <time.h>
 #include <vector>
 #include <chrono>
-#include <Windows.h>
+//#include <Windows.h>
 
-#include "../include/window.h"
-#include "../include/particle.h"
-#include "../include/particleManager.h"
+//#include "../include/window.h"
+//#include "../include/particle.h"
+//#include "../include/particleManager.h"
 
 int main(int argc, char* args[]) {
 	GLFWwindow* window;
@@ -19,6 +19,8 @@ int main(int argc, char* args[]) {
 	if (!glfwInit()) {
 		return -1;
 	}
+
+	glewInit();
 
 	window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Particle Sim v0.2", NULL, NULL);
 	if (!window) {
@@ -31,6 +33,12 @@ int main(int argc, char* args[]) {
 	while (!glfwWindowShouldClose(window)) {
 		// render
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		glBegin(GL_TRIANGLES);
+		glVertex2f(-0.5f, -0.5f);
+		glVertex2f(0.0f, 0.5f);
+		glVertex2f(-0.5f, 0.0f);
+		glEnd();
 
 		// swap front and back buffers
 		glfwSwapBuffers(window);
