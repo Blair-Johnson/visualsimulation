@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <cmath>
+
 #include "particle.h"
 
 
@@ -8,17 +10,22 @@ public:
 	void assignArgs(std::vector<Particle*>, Eigen::Vector2f, Eigen::Vector2f);
 	TreeNode();
 	~TreeNode();
+	void setSize(int);
 	void findCenter();
 	void updateIntervals();
+	void sortParticles();
+	int sortPointer(float, float);
+	void pushParticle(Particle*);
 public:
 	TreeNode* headNode;
 	TreeNode* m_subnodes[4];
 	std::vector<Particle*> m_particles;
 	Eigen::Vector2f m_com;
 	Eigen::Vector2f m_mean;
-	float m_mass;
 	Eigen::Vector2f x_interval;
 	Eigen::Vector2f y_interval;
+	float m_mass;
+	int size;
 };
 
 class QuadTree {

@@ -3,7 +3,6 @@
 #include <SDL.h>
 #include <cmath>
 
-
 struct Color {
 public:
 	Color();
