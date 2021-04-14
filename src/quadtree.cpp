@@ -1,10 +1,15 @@
 #include "../include/quadtree.h"
 
-TreeNode::TreeNode(std::vector<Particle*> p_particles, std::tuple<float,float>px_interval,std::tuple<float,float>py_interval)
-	:m_particles(p_particles), x_interval(px_interval),y_interval(py_interval), m_mass(0)
+void TreeNode::assignArgs(std::vector<Particle*> p_particles, Eigen::Vector2f px_interval, Eigen::Vector2f py_interval)
 {
+	m_particles = p_particles;
+	x_interval = px_interval;
+	y_interval = py_interval;
+	m_mass = 0;
 	findCenter();
 }
+
+TreeNode::TreeNode() {};
 
 void TreeNode::findCenter() {
 	if (m_particles.size() > 0) {
@@ -27,12 +32,29 @@ void TreeNode::findCenter() {
 }
 
 
-QuadTree::QuadTree(){}
+void TreeNode::updateIntervals() {
+	m_subnodes[0]->x_interval = {x_interval[0], m_mean[0]};
+	m_subnodes[0]->y_interval = { y_interval[0], m_mean[1] };
+	m_subnodes[1]->x_interval = { m_mean[0], x_interval[1] };
+	m_subnodes[1]->y_interval = { y_interval[0], m_mean[1] };
+	m_subnodes[2]->x_interval = { x_interval[0], m_mean[0] };
+	m_subnodes[2]->y_interval = { m_mean[1], y_interval[1] };
+	m_subnodes[3]->x_interval = { m_mean[0], x_interval[1] };
+	m_subnodes[3]->y_interval = { m_mean[1], y_interval[1] };
+}
+
+
+QuadTree::QuadTree(float p_width, float p_height)
+	:m_width(p_width), m_height(p_height)
+{}
 
 void QuadTree::addElements(std::vector<Particle> p_particles) {
 	particleList = p_particles;
+	Eigen::Vector2f x_interval(0, m_width);
+	Eigen::Vector2f y_interval(0, m_height);
 	indexElements();
-	//headNode = new TreeNode(particlePointers);
+	headNode = new TreeNode;
+	headNode->assignArgs(particlePointers, x_interval, y_interval);
 }
 
 void QuadTree::indexElements() {
@@ -42,6 +64,7 @@ void QuadTree::indexElements() {
 }
 
 void QuadTree::distribute() {
-
+	headNode->findCenter();
+	headNode->updateIntervals();
 }
  
