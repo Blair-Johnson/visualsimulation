@@ -9,7 +9,9 @@ void TreeNode::assignArgs(std::vector<Particle*> p_particles, Eigen::Vector2f px
 	findCenter();
 }
 
-TreeNode::TreeNode() {};
+TreeNode::TreeNode() {
+	TreeNode* m_subnodes[4] = {};
+};
 
 void TreeNode::findCenter() {
 	if (m_particles.size() > 0) {
@@ -76,10 +78,25 @@ void TreeNode::sortParticles() {
 		Particle* t_particle;
 		Eigen::Vector2f t_pos;
 		for (int i = 0; i < m_particles.size(); ++i) {
-			t_particle = m_particles[0];
+			t_particle = m_particles.back();
 			t_pos = t_particle->getPos();
 			index = sortPointer(t_pos[0], t_pos[1]);
-			m_subnodes[index]->pushParticle(t_particle);
+			if (m_subnodes[index] != NULL) {
+				m_subnodes[index]->pushParticle(t_particle);
+			}
+			else {
+				m_subnodes[index] = new TreeNode;
+				m_subnodes[index]->setSize(size);
+				m_subnodes[index]->pushParticle(t_particle);
+			}
+			m_particles.pop_back();
+		}
+	}
+	for (int i = 0; i < 4; ++i) {
+		if (m_subnodes[i] != NULL) {
+			m_subnodes[i]->findCenter();
+			m_subnodes[i]->updateIntervals();
+			m_subnodes[i]->sortParticles();
 		}
 	}
 }
