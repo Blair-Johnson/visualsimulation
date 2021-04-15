@@ -17,7 +17,6 @@ TreeNode::TreeNode() {
 	std::vector<Particle*> m_particles;
 	std::vector<Particle*> head_reserve;
 	std::vector<TreeNode*> leafNodes;
-	std::vector<int> treeIndex;
 	Eigen::Vector2f m_com;
 	Eigen::Vector2f m_mean;
 	Eigen::Vector2f x_interval;
@@ -32,7 +31,11 @@ TreeNode::~TreeNode() {
 }
 
 void TreeNode::reset() {
-	delete[] m_subnodes;
+	if (headNode == this) {
+		delete[] m_subnodes;
+		leafNodes.clear();
+		m_particles = head_reserve;
+	}
 }
 
 void TreeNode::findCenter() {
@@ -113,8 +116,6 @@ void TreeNode::sortParticles() {
 			else {
 				m_subnodes[index] = new TreeNode;
 				m_subnodes[index]->headNode = headNode;
-				m_subnodes[index]->treeIndex = treeIndex;
-				m_subnodes[index]->treeIndex.push_back(index);
 				m_subnodes[index]->setSize(size);
 				m_subnodes[index]->pushParticle(t_particle);
 			}
@@ -143,13 +144,13 @@ void TreeNode::applyFnet() {
 }
 
 void TreeNode::zeroFnet() {
-	for (int i = 0; i < m_particles.size(); ++i) {
-		m_particles[i]->zeroFnet();
-	}
+	//for (int i = 0; i < m_particles.size(); ++i) {
+	//	m_particles[i]->zeroFnet();
+	//}
 	m_fnet.setZero();
 }
 
-void TreeNode::updateForces(int p_atr, int p_mouse_atr, float p_interaction_coeff, float p_mouse_interaction_coeff, float p_min_interaction_dist) {
+void TreeNode::updateForces(int p_atr, float p_interaction_coeff, float p_min_interaction_dist) {
 	if (headNode == this) {
 		for (int i = 0; i < leafNodes.size(); ++i) {
 			leafNodes[i]->zeroFnet();
@@ -186,30 +187,33 @@ QuadTree::QuadTree(float p_width, float p_height)
 	:m_width(p_width), m_height(p_height)
 {}
 
-void QuadTree::addElements(std::vector<Particle> p_particles) {
-	particleList = p_particles;
+void QuadTree::addElements(std::vector<Particle*> p_particles) {
+	particlePointers = p_particles;
 	Eigen::Vector2f x_interval(0, m_width);
 	Eigen::Vector2f y_interval(0, m_height);
-	indexElements();
 	headNode = new TreeNode;
 	headNode->headNode = headNode;
-	headNode->assignArgs(particlePointers, x_interval, y_interval);
+	headNode->assignArgsHead(particlePointers, x_interval, y_interval);
 	headNode->setSize(int(pow(p_particles.size(),0.5)));
 }
 
-void QuadTree::indexElements() {
-	for (int i = 0; i < particleList.size(); ++i) {
-		particlePointers.push_back(&particleList.front() + i);
-	}
-}
-
 void QuadTree::distribute() {
+	headNode->reset();
 	headNode->findCenter();
 	headNode->updateIntervals();
 	headNode->sortParticles();
 }
 
-void QuadTree::updateForces(int atr, int mouse_atr, float interaction_coeff, float mouse_interaction_coeff, float min_interaction_dist) {
+void QuadTree::updateForces(int atr, float interaction_coeff, float min_interaction_dist) {
+	headNode->updateForces(atr, interaction_coeff, min_interaction_dist);
+}
 
+QuadTree::~QuadTree() {
+	delete headNode;
+}
+
+void QuadTree::pushElement(Particle *p_particle) {
+	particlePointers.push_back(p_particle);
 }
  
+QuadTree::QuadTree(){}

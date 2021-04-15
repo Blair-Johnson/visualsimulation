@@ -2,8 +2,10 @@
 #include <vector>
 #include <thread>
 #include <iostream>
+
 #include "particle.h"
 #include "window.h"
+#include "quadtree.h"
 
 
 class ParticleManager {
@@ -16,11 +18,13 @@ public:
 	void updateStep(float, int, float);
 	void renderParticles();
 	void updateForces(Particle, int, int, float, float, float);
-	void drawNewPos();
+	void redistributeQuadtree();
+	void indexElements();
 	
 public:
 	void threadZeroRange(Particle*, Particle*);
 	std::vector <Particle> particleList;
 	RenderWindow* m_window;
+	QuadTree m_quadtree;
 
 };

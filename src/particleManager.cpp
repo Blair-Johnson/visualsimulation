@@ -5,7 +5,7 @@ ParticleManager::ParticleManager(RenderWindow* p_window, int p_numParticles)
 {
 	int radius = 3;
 	int m = 1;
-
+	QuadTree m_quadtree(m_window->getWidth(), m_window->getHeight());
 	for (int i = 0; i < p_numParticles; i++) {
 		float x = rand() % (m_window->getWidth() - 1 - 2 * radius) + radius;
 		float y = rand() % (m_window->getHeight() - 1 - 2 * radius) + radius;
@@ -13,15 +13,25 @@ ParticleManager::ParticleManager(RenderWindow* p_window, int p_numParticles)
 		Eigen::Vector2f t_vel = Eigen::Vector2f::Random() * 1000;
 		Particle t_particle = Particle(m_window->getRenderer(), t_pos, t_vel, m, radius);
 		particleList.push_back(t_particle);
+		m_quadtree.pushElement(&t_particle);
 	}
+	
 }
-
 
 ParticleManager::ParticleManager(RenderWindow* p_window, std::vector<Particle> p_particleList)
 	:m_window(p_window), particleList(p_particleList)
-{}
+{
+	QuadTree m_quadtree(m_window->getWidth(), m_window->getHeight());
+	indexElements();
+}
 
 ParticleManager::~ParticleManager() {}
+
+void ParticleManager::indexElements() {
+	for (int i = 0; i < particleList.size(); ++i) {
+		m_quadtree.pushElement(&particleList[i]);
+	}
+}
 
 void ParticleManager::zeroForcesThreaded() {
 	int length = particleList.size();
@@ -60,11 +70,12 @@ void ParticleManager::zeroForces() {
 }
 
 void ParticleManager::updateForces(Particle p_mouse, int atr, int mouse_atr, float interaction_coeff, float mouse_interaction_coeff, float min_interaction_dist) {
-	for (int i = 0; i < particleList.size(); ++i) {
-		particleList[i].updateFnet(&p_mouse, mouse_atr, mouse_interaction_coeff, min_interaction_dist);
-		for (int j = i + 1; j < particleList.size(); j++)
-			particleList[i].updateFnet(&particleList[j], atr, interaction_coeff, min_interaction_dist);
-	}
+	//for (int i = 0; i < particleList.size(); ++i) {
+	//	particleList[i].updateFnet(&p_mouse, mouse_atr, mouse_interaction_coeff, min_interaction_dist);
+	//	for (int j = i + 1; j < particleList.size(); j++)
+	//		particleList[i].updateFnet(&particleList[j], atr, interaction_coeff, min_interaction_dist);
+	//}
+	m_quadtree.updateForces(atr, interaction_coeff, min_interaction_dist);
 }
 
 void ParticleManager::updateStep(float dt, int gravity, float damping) {
@@ -78,4 +89,8 @@ void ParticleManager::renderParticles() {
 	for (int i = 0; i < particleList.size(); ++i) {
 		particleList[i].render();
 	}
+}
+
+void ParticleManager::redistributeQuadtree() {
+	m_quadtree.distribute();
 }

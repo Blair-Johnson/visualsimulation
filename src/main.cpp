@@ -138,6 +138,7 @@ int main(int argc, char* args[]) {
 		SDL_GetMouseState(&mouse_x, &mouse_y);
 		mouse_point.setPos(Eigen::Vector2f(mouse_x, mouse_y));
 		auto lstart = std::chrono::steady_clock::now();
+		manager.redistributeQuadtree();
 		manager.zeroForces();
 		//auto l1 = std::chrono::steady_clock::now();
 		//manager.zeroForcesThreaded();
