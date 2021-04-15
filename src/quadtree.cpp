@@ -50,7 +50,7 @@ void TreeNode::findCenter() {
 
 void TreeNode::updateIntervals() {
 	//non-center coordinates may or may not be irrelevant
-	m_subnodes[0]->x_interval = {x_interval[0], m_mean[0]};
+	m_subnodes[0]->x_interval = { x_interval[0], m_mean[0] };
 	m_subnodes[0]->y_interval = { y_interval[0], m_mean[1] };
 	m_subnodes[1]->x_interval = { m_mean[0], x_interval[1] };
 	m_subnodes[1]->y_interval = { y_interval[0], m_mean[1] };
@@ -127,22 +127,38 @@ void TreeNode::sortParticles() {
 	}
 }
 
-void TreeNode::updateForces() {
+void TreeNode::zeroFnet() {
+	for (int i = 0; i < m_particles.size(); ++i) {
+		m_particles[i]->zeroFnet();
+	}
+}
+
+void TreeNode::updateForces(int atr, int mouse_atr, float interaction_coeff, float mouse_interaction_coeff, float min_interaction_dist) {
 	if (headNode == this) {
 		for (int i = 0; i < leafNodes.size(); ++i) {
-			leafNodes[i]->updateForcesLocal();
+			leafNodes[i]->zeroFnet();
+		}
+		for (int i = 0; i < leafNodes.size(); ++i) {
 			for (int j = i + 1; j < leafNodes.size(); ++j) {
-				leafNodes[i]->updateForces(leafNodes[j]);
+				leafNodes[i]->updateForces(leafNodes[j], atr, interaction_coeff, min_interaction_dist);
 			}
+			leafNodes[i]->updateForcesLocal(atr, interaction_coeff, min_interaction_dist);
+			leafNodes[i]->applyFnet();
 		}
 	}
 }
 
-void TreeNode::updateForces(TreeNode* p_leaf) {
-	// need to overload the force update in particle to accept a mass + COM combination
+void TreeNode::updateForces(TreeNode* p_leaf, int atr, float interaction_coeff, float min_interaction_dist) {
+	Eigen::Vector2f r_vec = p_leaf->m_com - m_com;
+	float r_mag = r_vec.squaredNorm();
+	r_vec /= r_vec.norm();
+	float rad = pow(pow((x_interval[1] - x_interval[0]) / 4, 2) + pow((y_interval[1] - y_interval[0]) / 4, 2), 0.5);
+	r_vec = atr * interaction_coeff * (m_mass * p_leaf->m_mass) / (r_mag + min_interaction_dist*rad) * r_vec;
+	p_leaf->m_fnet -= r_vec;
+	m_fnet += r_vec;
 }
 
-void TreeNode::updateForcesLocal() {
+void TreeNode::updateForcesLocal(int atr, float interaction_coeff, float min_interaction_dist) {
 	for (int i = 0; i < m_particles.size(); ++i) {
 		for (int j = i + 1; j < m_particles.size(); ++j) {
 			// PLACEHOLDER VALUES: need to update with dynamic physics parameters
@@ -176,5 +192,9 @@ void QuadTree::distribute() {
 	headNode->findCenter();
 	headNode->updateIntervals();
 	headNode->sortParticles();
+}
+
+void QuadTree::updateForces(int atr, int mouse_atr, float interaction_coeff, float mouse_interaction_coeff, float min_interaction_dist) {
+
 }
  

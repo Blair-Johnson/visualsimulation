@@ -16,9 +16,11 @@ public:
 	void sortParticles();
 	int sortPointer(float, float);
 	void pushParticle(Particle*);
-	void updateForces();
-	void updateForces(TreeNode*);
-	void updateForcesLocal();
+	void updateForces(int, int, float, float, float);
+	void updateForces(TreeNode*, int, float, float);
+	void updateForcesLocal(int, float, float);
+	void applyFnet();
+	void zeroFnet();
 public:
 	TreeNode* headNode;
 	TreeNode* m_subnodes[4];
@@ -28,6 +30,7 @@ public:
 	std::vector<int> treeIndex;
 	Eigen::Vector2f m_com;
 	Eigen::Vector2f m_mean;
+	Eigen::Vector2f m_fnet;
 	Eigen::Vector2f x_interval;
 	Eigen::Vector2f y_interval;
 	float m_mass;
@@ -39,7 +42,7 @@ public:
 	QuadTree(float, float);
 	~QuadTree();
 	void addElements(std::vector<Particle>);
-	void updateForces();
+	void updateForces(int, int, float, float, float);
 private:
 	void indexElements();
 	void distribute();
