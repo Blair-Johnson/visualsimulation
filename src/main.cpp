@@ -25,7 +25,7 @@ int main(int argc, char* args[]) {
 	SDL_Event event;
 
 	// init random particles in manager
-	int numParticles = 90;
+	int numParticles = 70;
 	ParticleManager manager(&window, numParticles);
 
 	auto start = std::chrono::steady_clock::now();
@@ -154,8 +154,8 @@ int main(int argc, char* args[]) {
 		manager.renderParticles();
 		window.update();
 		auto stop = std::chrono::steady_clock::now();
-		std::cout << "Calculations: " << std::chrono::duration_cast<std::chrono::milliseconds>(rdrstart - lstart).count() << "ms" << std::endl;
-		std::cout << "Render: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - rdrstart).count() << "ms" << std::endl;
+		//std::cout << "Calculations: " << std::chrono::duration_cast<std::chrono::milliseconds>(rdrstart - lstart).count() << "ms" << std::endl;
+		//std::cout << "Render: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - rdrstart).count() << "ms" << std::endl;
 	}
 
 	window.cleanUp();

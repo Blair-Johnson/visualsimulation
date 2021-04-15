@@ -11,7 +11,22 @@ void TreeNode::assignArgs(std::vector<Particle*> p_particles, Eigen::Vector2f px
 
 TreeNode::TreeNode() {
 	TreeNode* m_subnodes[4] = {};
-};
+	TreeNode* headNode = NULL;
+	std::vector<Particle*> m_particles;
+	std::vector<Particle*> head_reserve;
+	std::vector<TreeNode*> leafNodes;
+	std::vector<int> treeIndex;
+	Eigen::Vector2f m_com;
+	Eigen::Vector2f m_mean;
+	Eigen::Vector2f x_interval;
+	Eigen::Vector2f y_interval;
+	float m_mass;
+	int size;
+}
+
+TreeNode::~TreeNode() {
+	// Need to correctly delete all dynamically allocated subnodes;
+}
 
 void TreeNode::findCenter() {
 	if (m_particles.size() > 0) {
@@ -70,10 +85,14 @@ void TreeNode::setSize(int p_size) {
 
 void TreeNode::pushParticle(Particle* p_particle) {
 	m_particles.push_back(p_particle);
+	if (headNode == this) {
+		head_reserve.push_back(p_particle);
+	}
 }
 
 void TreeNode::sortParticles() {
 	if (m_particles.size() > size) {
+		// if > sqrt(total), distribute into subnodes
 		int index;
 		Particle* t_particle;
 		Eigen::Vector2f t_pos;
@@ -86,17 +105,48 @@ void TreeNode::sortParticles() {
 			}
 			else {
 				m_subnodes[index] = new TreeNode;
+				m_subnodes[index]->headNode = headNode;
+				m_subnodes[index]->treeIndex = treeIndex;
+				m_subnodes[index]->treeIndex.push_back(index);
 				m_subnodes[index]->setSize(size);
 				m_subnodes[index]->pushParticle(t_particle);
 			}
 			m_particles.pop_back();
 		}
+		for (int i = 0; i < 4; ++i) {
+			if (m_subnodes[i] != NULL) {
+				m_subnodes[i]->findCenter();
+				m_subnodes[i]->updateIntervals();
+				m_subnodes[i]->sortParticles();
+			}
+		}
 	}
-	for (int i = 0; i < 4; ++i) {
-		if (m_subnodes[i] != NULL) {
-			m_subnodes[i]->findCenter();
-			m_subnodes[i]->updateIntervals();
-			m_subnodes[i]->sortParticles();
+	else {
+		//is a leaf node
+		headNode->leafNodes.push_back(this);
+	}
+}
+
+void TreeNode::updateForces() {
+	if (headNode == this) {
+		for (int i = 0; i < leafNodes.size(); ++i) {
+			leafNodes[i]->updateForcesLocal();
+			for (int j = i + 1; j < leafNodes.size(); ++j) {
+				leafNodes[i]->updateForces(leafNodes[j]);
+			}
+		}
+	}
+}
+
+void TreeNode::updateForces(TreeNode* p_leaf) {
+	// need to overload the force update in particle to accept a mass + COM combination
+}
+
+void TreeNode::updateForcesLocal() {
+	for (int i = 0; i < m_particles.size(); ++i) {
+		for (int j = i + 1; j < m_particles.size(); ++j) {
+			// PLACEHOLDER VALUES: need to update with dynamic physics parameters
+			m_particles[i]->updateFnet(m_particles[j], 10, 100.0, 100.0);
 		}
 	}
 }
@@ -111,6 +161,7 @@ void QuadTree::addElements(std::vector<Particle> p_particles) {
 	Eigen::Vector2f y_interval(0, m_height);
 	indexElements();
 	headNode = new TreeNode;
+	headNode->headNode = headNode;
 	headNode->assignArgs(particlePointers, x_interval, y_interval);
 	headNode->setSize(int(pow(p_particles.size(),0.5)));
 }

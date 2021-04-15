@@ -16,10 +16,16 @@ public:
 	void sortParticles();
 	int sortPointer(float, float);
 	void pushParticle(Particle*);
+	void updateForces();
+	void updateForces(TreeNode*);
+	void updateForcesLocal();
 public:
 	TreeNode* headNode;
 	TreeNode* m_subnodes[4];
 	std::vector<Particle*> m_particles;
+	std::vector<Particle*> head_reserve;
+	std::vector<TreeNode*> leafNodes;
+	std::vector<int> treeIndex;
 	Eigen::Vector2f m_com;
 	Eigen::Vector2f m_mean;
 	Eigen::Vector2f x_interval;
