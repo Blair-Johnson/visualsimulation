@@ -11,7 +11,6 @@ Interactive N-body particle simulations
 Plus mouse interaction with variable strength of attraction/repulsion
 
 ### TODO:
-- Move particle management into particle manager
 - Complete quadtree implementation and integrate with particle manager
 - Replace texture blit with faster drawing method
 - Add more complex interactions
