@@ -7,7 +7,7 @@
 
 class TreeNode {
 public:
-	void assignArgs(std::vector<Particle*>, Eigen::Vector2f, Eigen::Vector2f);
+	void assignArgsHead(std::vector<Particle*>, Eigen::Vector2f, Eigen::Vector2f);
 	TreeNode();
 	~TreeNode();
 	void setSize(int);
@@ -21,6 +21,7 @@ public:
 	void updateForcesLocal(int, float, float);
 	void applyFnet();
 	void zeroFnet();
+	void reset();
 public:
 	TreeNode* headNode;
 	TreeNode* m_subnodes[4];

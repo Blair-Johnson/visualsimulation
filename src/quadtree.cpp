@@ -1,8 +1,10 @@
 #include "../include/quadtree.h"
 
-void TreeNode::assignArgs(std::vector<Particle*> p_particles, Eigen::Vector2f px_interval, Eigen::Vector2f py_interval)
+void TreeNode::assignArgsHead(std::vector<Particle*> p_particles, Eigen::Vector2f px_interval, Eigen::Vector2f py_interval)
 {
 	m_particles = p_particles;
+	headNode = this;
+	head_reserve = p_particles;
 	x_interval = px_interval;
 	y_interval = py_interval;
 	m_mass = 0;
@@ -26,6 +28,11 @@ TreeNode::TreeNode() {
 
 TreeNode::~TreeNode() {
 	// Need to correctly delete all dynamically allocated subnodes;
+	delete[] m_subnodes;
+}
+
+void TreeNode::reset() {
+	delete[] m_subnodes;
 }
 
 void TreeNode::findCenter() {
@@ -127,42 +134,50 @@ void TreeNode::sortParticles() {
 	}
 }
 
+void TreeNode::applyFnet() {
+	if (m_particles.size() > 0) {
+		for (int i = 0; i < m_particles.size(); ++i) {
+			m_particles[i]->setFnet(m_particles[i]->getFnet() + m_fnet);
+		}
+	}
+}
+
 void TreeNode::zeroFnet() {
 	for (int i = 0; i < m_particles.size(); ++i) {
 		m_particles[i]->zeroFnet();
 	}
+	m_fnet.setZero();
 }
 
-void TreeNode::updateForces(int atr, int mouse_atr, float interaction_coeff, float mouse_interaction_coeff, float min_interaction_dist) {
+void TreeNode::updateForces(int p_atr, int p_mouse_atr, float p_interaction_coeff, float p_mouse_interaction_coeff, float p_min_interaction_dist) {
 	if (headNode == this) {
 		for (int i = 0; i < leafNodes.size(); ++i) {
 			leafNodes[i]->zeroFnet();
 		}
 		for (int i = 0; i < leafNodes.size(); ++i) {
 			for (int j = i + 1; j < leafNodes.size(); ++j) {
-				leafNodes[i]->updateForces(leafNodes[j], atr, interaction_coeff, min_interaction_dist);
+				leafNodes[i]->updateForces(leafNodes[j], p_atr, p_interaction_coeff, p_min_interaction_dist);
 			}
-			leafNodes[i]->updateForcesLocal(atr, interaction_coeff, min_interaction_dist);
+			leafNodes[i]->updateForcesLocal(p_atr, p_interaction_coeff, p_min_interaction_dist);
 			leafNodes[i]->applyFnet();
 		}
 	}
 }
 
-void TreeNode::updateForces(TreeNode* p_leaf, int atr, float interaction_coeff, float min_interaction_dist) {
+void TreeNode::updateForces(TreeNode* p_leaf, int p_atr, float p_interaction_coeff, float p_min_interaction_dist) {
 	Eigen::Vector2f r_vec = p_leaf->m_com - m_com;
 	float r_mag = r_vec.squaredNorm();
 	r_vec /= r_vec.norm();
 	float rad = pow(pow((x_interval[1] - x_interval[0]) / 4, 2) + pow((y_interval[1] - y_interval[0]) / 4, 2), 0.5);
-	r_vec = atr * interaction_coeff * (m_mass * p_leaf->m_mass) / (r_mag + min_interaction_dist*rad) * r_vec;
+	r_vec = p_atr * p_interaction_coeff * (m_mass * p_leaf->m_mass) / (r_mag + p_min_interaction_dist*rad) * r_vec;
 	p_leaf->m_fnet -= r_vec;
 	m_fnet += r_vec;
 }
 
-void TreeNode::updateForcesLocal(int atr, float interaction_coeff, float min_interaction_dist) {
+void TreeNode::updateForcesLocal(int p_atr, float p_interaction_coeff, float p_min_interaction_dist) {
 	for (int i = 0; i < m_particles.size(); ++i) {
 		for (int j = i + 1; j < m_particles.size(); ++j) {
-			// PLACEHOLDER VALUES: need to update with dynamic physics parameters
-			m_particles[i]->updateFnet(m_particles[j], 10, 100.0, 100.0);
+			m_particles[i]->updateFnet(m_particles[j], p_atr, p_interaction_coeff, p_min_interaction_dist);
 		}
 	}
 }
