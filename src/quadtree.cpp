@@ -9,10 +9,11 @@ void TreeNode::assignArgsHead(std::vector<Particle*> p_particles, Eigen::Vector2
 	y_interval = py_interval;
 	m_mass = 0;
 	findCenter();
+
 }
 
 TreeNode::TreeNode() {
-	TreeNode* m_subnodes[4] = {};
+	TreeNode* m_subnodes[4] = {NULL, NULL, NULL, NULL};
 	TreeNode* headNode = NULL;
 	std::vector<Particle*> m_particles;
 	std::vector<Particle*> head_reserve;
@@ -23,16 +24,25 @@ TreeNode::TreeNode() {
 	Eigen::Vector2f y_interval;
 	float m_mass;
 	int size;
+
 }
 
 TreeNode::~TreeNode() {
-	// Need to correctly delete all dynamically allocated subnodes;
-	delete[] m_subnodes;
+	//Need to correctly delete all dynamically allocated subnodes;
+	for (int i = 0; i < 4; ++i) {
+		if (m_subnodes[i] != NULL) {
+			delete m_subnodes[i];
+		}
+	}
 }
 
 void TreeNode::reset() {
 	if (headNode == this) {
-		delete[] m_subnodes;
+		for (int i = 0; i < 4; ++i) {
+			if (m_subnodes[i] != NULL) {
+				delete m_subnodes[i];
+			}
+		}
 		leafNodes.clear();
 		m_particles = head_reserve;
 	}
@@ -53,21 +63,31 @@ void TreeNode::findCenter() {
 			m_com += m_particles[i]->getPos() * t_mass;
 			m_mean += m_particles[i]->getPos();
 		}
+		//At some point my particles are becoming junk
 		m_com /= m_mass;
 		m_mean /= m_particles.size();
 	}
+
 }
 
 void TreeNode::updateIntervals() {
 	//non-center coordinates may or may not be irrelevant
-	m_subnodes[0]->x_interval = { x_interval[0], m_mean[0] };
-	m_subnodes[0]->y_interval = { y_interval[0], m_mean[1] };
-	m_subnodes[1]->x_interval = { m_mean[0], x_interval[1] };
-	m_subnodes[1]->y_interval = { y_interval[0], m_mean[1] };
-	m_subnodes[2]->x_interval = { x_interval[0], m_mean[0] };
-	m_subnodes[2]->y_interval = { m_mean[1], y_interval[1] };
-	m_subnodes[3]->x_interval = { m_mean[0], x_interval[1] };
-	m_subnodes[3]->y_interval = { m_mean[1], y_interval[1] };
+	if (m_subnodes[0] != NULL) {
+		m_subnodes[0]->x_interval = { x_interval[0], m_mean[0] };
+		m_subnodes[0]->y_interval = { y_interval[0], m_mean[1] };
+	}
+	if (m_subnodes[1] != NULL) {
+		m_subnodes[1]->x_interval = { m_mean[0], x_interval[1] };
+		m_subnodes[1]->y_interval = { y_interval[0], m_mean[1] };
+	}
+	if (m_subnodes[2] != NULL) {
+		m_subnodes[2]->x_interval = { x_interval[0], m_mean[0] };
+		m_subnodes[2]->y_interval = { m_mean[1], y_interval[1] };
+	}
+	if (m_subnodes[3] != NULL) {
+		m_subnodes[3]->x_interval = { m_mean[0], x_interval[1] };
+		m_subnodes[3]->y_interval = { m_mean[1], y_interval[1] };
+	}
 }
 
 int TreeNode::sortPointer(float x, float y) {
@@ -121,10 +141,11 @@ void TreeNode::sortParticles() {
 			}
 			m_particles.pop_back();
 		}
+		updateIntervals();
 		for (int i = 0; i < 4; ++i) {
 			if (m_subnodes[i] != NULL) {
 				m_subnodes[i]->findCenter();
-				m_subnodes[i]->updateIntervals();
+				//m_subnodes[i]->updateIntervals();
 				m_subnodes[i]->sortParticles();
 			}
 		}
@@ -185,23 +206,33 @@ void TreeNode::updateForcesLocal(int p_atr, float p_interaction_coeff, float p_m
 
 QuadTree::QuadTree(float p_width, float p_height)
 	:m_width(p_width), m_height(p_height)
-{}
+{
+	headNode = new TreeNode;
+	headNode->headNode = headNode;
+	Eigen::Vector2f x_interval(0, m_width);
+	Eigen::Vector2f y_interval(0, m_height);
+	headNode->x_interval = x_interval;
+	headNode->y_interval = y_interval;
+}
 
 void QuadTree::addElements(std::vector<Particle*> p_particles) {
 	particlePointers = p_particles;
-	Eigen::Vector2f x_interval(0, m_width);
-	Eigen::Vector2f y_interval(0, m_height);
-	headNode = new TreeNode;
-	headNode->headNode = headNode;
 	headNode->assignArgsHead(particlePointers, x_interval, y_interval);
-	headNode->setSize(int(pow(p_particles.size(),0.5)));
+	headNode->setSize(int(pow(particlePointers.size(),0.5)));
 }
 
 void QuadTree::distribute() {
-	headNode->reset();
-	headNode->findCenter();
+
+
+
+	//headNode->reset();
+	//headNode->findCenter();
+
 	headNode->updateIntervals();
+
 	headNode->sortParticles();
+
+	
 }
 
 void QuadTree::updateForces(int atr, float interaction_coeff, float min_interaction_dist) {
@@ -212,8 +243,14 @@ QuadTree::~QuadTree() {
 	delete headNode;
 }
 
-void QuadTree::pushElement(Particle *p_particle) {
+void QuadTree::pushElement(Particle *p_particle, Particle p_particleObj) {
 	particlePointers.push_back(p_particle);
+	particleList.push_back(p_particleObj);
+}
+
+void QuadTree::initHeadNode() {
+	headNode->assignArgsHead(particlePointers, x_interval, y_interval);
+	headNode->setSize(int(pow(particlePointers.size(), 0.5)));
 }
  
-QuadTree::QuadTree(){}
+QuadTree::QuadTree() {}

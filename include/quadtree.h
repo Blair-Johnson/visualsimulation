@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 #include "particle.h"
 
@@ -44,10 +45,14 @@ public:
 	~QuadTree();
 	void addElements(std::vector<Particle*>);
 	void updateForces(int, float, float);
-	void pushElement(Particle*);
+	void pushElement(Particle*, Particle);
 	void distribute();
-private:
+	void initHeadNode();
 	TreeNode* headNode;
+private:
+	Eigen::Vector2f x_interval;
+	Eigen::Vector2f y_interval;
 	std::vector<Particle*> particlePointers;
+	std::vector<Particle> particleList;
 	float m_width, m_height;
 };

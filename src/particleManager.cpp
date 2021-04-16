@@ -1,11 +1,13 @@
 # include "../include/particleManager.h"
 
 ParticleManager::ParticleManager(RenderWindow* p_window, int p_numParticles)
-	:m_window(p_window)
+	:m_window(p_window), m_quadtree(m_window->getWidth(), m_window->getHeight())
 {
 	int radius = 3;
 	int m = 1;
-	QuadTree m_quadtree(m_window->getWidth(), m_window->getHeight());
+	
+	//std::cout << m_quadtree.headNode << std::endl;
+	//std::cout << m_quadtree.headNode << std::endl;
 	for (int i = 0; i < p_numParticles; i++) {
 		float x = rand() % (m_window->getWidth() - 1 - 2 * radius) + radius;
 		float y = rand() % (m_window->getHeight() - 1 - 2 * radius) + radius;
@@ -13,9 +15,12 @@ ParticleManager::ParticleManager(RenderWindow* p_window, int p_numParticles)
 		Eigen::Vector2f t_vel = Eigen::Vector2f::Random() * 1000;
 		Particle t_particle = Particle(m_window->getRenderer(), t_pos, t_vel, m, radius);
 		particleList.push_back(t_particle);
-		m_quadtree.pushElement(&t_particle);
+		m_quadtree.pushElement(&t_particle, t_particle);
 	}
-	
+
+	m_quadtree.initHeadNode();
+
+	//std::cout << m_quadtree.headNode->headNode << std::endl;
 }
 
 ParticleManager::ParticleManager(RenderWindow* p_window, std::vector<Particle> p_particleList)
@@ -29,7 +34,7 @@ ParticleManager::~ParticleManager() {}
 
 void ParticleManager::indexElements() {
 	for (int i = 0; i < particleList.size(); ++i) {
-		m_quadtree.pushElement(&particleList[i]);
+		m_quadtree.pushElement(&particleList[i], particleList[i]);
 	}
 }
 
