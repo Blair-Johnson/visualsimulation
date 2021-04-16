@@ -30,7 +30,7 @@ int main(int argc, char* args[]) {
 
 	manager.redistributeQuadtree();
 
-
+	manager.zeroForces();
 
 	//auto start = std::chrono::steady_clock::now();
 	//for (int i = 0; i < numParticles; i++) {

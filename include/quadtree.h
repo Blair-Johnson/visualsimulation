@@ -45,9 +45,10 @@ public:
 	~QuadTree();
 	void addElements(std::vector<Particle*>);
 	void updateForces(int, float, float);
-	void pushElement(Particle*, Particle);
+	void pushElement(Particle);
 	void distribute();
 	void initHeadNode();
+	void indexNodes();
 	TreeNode* headNode;
 private:
 	Eigen::Vector2f x_interval;

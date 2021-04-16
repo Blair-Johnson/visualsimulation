@@ -126,8 +126,7 @@ void TreeNode::sortParticles() {
 		int index;
 		Particle* t_particle;
 		Eigen::Vector2f t_pos;
-		int len = m_particles.size();
-		for (int i = 0; i < len; ++i) {
+		for (int i = 0; i < m_particles.size(); ++i) {
 			t_particle = m_particles.back();
 			t_pos = t_particle->getPos();
 			index = sortPointer(t_pos[0], t_pos[1]);

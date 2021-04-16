@@ -14,8 +14,8 @@ ParticleManager::ParticleManager(RenderWindow* p_window, int p_numParticles)
 		Eigen::Vector2f t_pos = Eigen::Vector2f(x, y);
 		Eigen::Vector2f t_vel = Eigen::Vector2f::Random() * 1000;
 		Particle t_particle = Particle(m_window->getRenderer(), t_pos, t_vel, m, radius);
-		particleList.push_back(t_particle);
-		m_quadtree.pushElement(&t_particle, t_particle);
+		//particleList.push_back(t_particle);
+		m_quadtree.pushElement(t_particle);
 	}
 
 	m_quadtree.initHeadNode();
@@ -34,7 +34,7 @@ ParticleManager::~ParticleManager() {}
 
 void ParticleManager::indexElements() {
 	for (int i = 0; i < particleList.size(); ++i) {
-		m_quadtree.pushElement(&particleList[i], particleList[i]);
+		m_quadtree.pushElement(particleList[i]);
 	}
 }
 
