@@ -17,7 +17,7 @@ public:
 	void zeroForcesThreaded();
 	void updateStep(float, int, float);
 	void renderParticles();
-	void updateForces(Particle, int, int, float, float, float);
+	void updateForces(int, float, float);
 	void redistributeQuadtree();
 	void indexElements();
 	

@@ -49,11 +49,13 @@ public:
 	void distribute();
 	void initHeadNode();
 	void indexNodes();
+	void zeroAllForces();
 	TreeNode* headNode;
+	std::vector<Particle> particleList;
 private:
 	Eigen::Vector2f x_interval;
 	Eigen::Vector2f y_interval;
 	std::vector<Particle*> particlePointers;
-	std::vector<Particle> particleList;
+	
 	float m_width, m_height;
 };

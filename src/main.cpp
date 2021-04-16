@@ -30,7 +30,6 @@ int main(int argc, char* args[]) {
 
 	manager.redistributeQuadtree();
 
-	manager.zeroForces();
 
 	//auto start = std::chrono::steady_clock::now();
 	//for (int i = 0; i < numParticles; i++) {
@@ -44,15 +43,25 @@ int main(int argc, char* args[]) {
 
 	////std::cout << "Drawing Took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
 	//// coefficients
-	//int atr = 1;
-	//int mouse_atr = 1;
-	//int mouse_x, mouse_y = 0;
-	//bool gravity = false;
-	//float damping = 0.5;
-	//float interaction_coeff = 0.5e6;
-	//float mouse_interaction_coeff = 0.5e6;
-	//float min_interaction_dist = 3;
+	int atr = 1;
+	int mouse_atr = 1;
+	int mouse_x, mouse_y = 0;
+	bool gravity = false;
+	float damping = 0.5;
+	float interaction_coeff = 0.5e6;
+	float mouse_interaction_coeff = 0.5e6;
+	float min_interaction_dist = 3;
+	manager.updateForces(atr, interaction_coeff, min_interaction_dist);
 
+	manager.updateStep(0.01, gravity, damping);
+
+	manager.redistributeQuadtree();
+
+	manager.updateForces(atr, interaction_coeff, min_interaction_dist);
+
+	manager.updateStep(0.01, gravity, damping);
+
+	manager.redistributeQuadtree();
 
 	//while (running) {
 	//	while (SDL_PollEvent(&event)) {

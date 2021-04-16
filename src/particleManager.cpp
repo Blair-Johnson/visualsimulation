@@ -69,12 +69,10 @@ void ParticleManager::threadZeroRange(Particle* p_begin, Particle* p_end) {
 }
 
 void ParticleManager::zeroForces() {
-	for (int i = 0; i < particleList.size(); i++) {
-		particleList[i].zeroFnet();
-	}
+	m_quadtree.zeroAllForces();
 }
 
-void ParticleManager::updateForces(Particle p_mouse, int atr, int mouse_atr, float interaction_coeff, float mouse_interaction_coeff, float min_interaction_dist) {
+void ParticleManager::updateForces(int atr, float interaction_coeff, float min_interaction_dist) {
 	//for (int i = 0; i < particleList.size(); ++i) {
 	//	particleList[i].updateFnet(&p_mouse, mouse_atr, mouse_interaction_coeff, min_interaction_dist);
 	//	for (int j = i + 1; j < particleList.size(); j++)
@@ -85,8 +83,8 @@ void ParticleManager::updateForces(Particle p_mouse, int atr, int mouse_atr, flo
 
 void ParticleManager::updateStep(float dt, int gravity, float damping) {
 	for (int i = 0; i < particleList.size(); ++i) {
-		particleList[i].step(0.01, gravity, damping);
-		particleList[i].checkLimits(m_window->getWidth() - 1, m_window->getHeight() - 1);
+		m_quadtree.particleList[i].step(0.01, gravity, damping);
+		m_quadtree.particleList[i].checkLimits(m_window->getWidth() - 1, m_window->getHeight() - 1);
 	}
 }
 

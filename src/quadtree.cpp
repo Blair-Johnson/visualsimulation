@@ -41,7 +41,9 @@ void TreeNode::reset() {
 		for (int i = 0; i < 4; ++i) {
 			if (m_subnodes[i] != NULL) {
 				delete m_subnodes[i];
+				m_subnodes[i] = NULL;
 			}
+
 		}
 		leafNodes.clear();
 		m_particles = head_reserve;
@@ -230,19 +232,28 @@ void QuadTree::indexNodes() {
 
 void QuadTree::distribute() {
 
-
-
 	headNode->reset();
 	headNode->findCenter();
-
 	headNode->updateIntervals();
 
 	headNode->sortParticles();
+}
 
-	
+void QuadTree::zeroAllForces() {
+	for (int i = 0; i < particleList.size(); ++i) {
+		particleList[i].zeroFnet();
+	}
+	if (headNode->leafNodes.size() > 0) {
+		for (int i = 0; i < headNode->leafNodes.size(); ++i) {
+			headNode->leafNodes[i]->zeroFnet();
+		}
+	}
 }
 
 void QuadTree::updateForces(int atr, float interaction_coeff, float min_interaction_dist) {
+	for (int i = 0; i < particleList.size(); ++i) {
+		particleList[i].zeroFnet();
+	}
 	headNode->updateForces(atr, interaction_coeff, min_interaction_dist);
 }
 
