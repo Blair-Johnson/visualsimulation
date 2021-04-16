@@ -25,7 +25,7 @@ int main(int argc, char* args[]) {
 	SDL_Event event;
 
 	// init random particles in manager
-	int numParticles = 70;
+	int numParticles = 325;
 	ParticleManager manager(&window, numParticles);
 
 	//manager.redistributeQuadtree();
@@ -164,13 +164,14 @@ int main(int argc, char* args[]) {
 		window.renderClear();
 		window.setColor(48, 48, 48, 255);
 		manager.updateStep(0.01, gravity, damping);
-		auto rdrstart = std::chrono::steady_clock::now();
+		//auto rdrstart = std::chrono::steady_clock::now();
 		manager.renderParticles();
 		window.update();
-		auto stop = std::chrono::steady_clock::now();
+		//auto stop = std::chrono::steady_clock::now();
 		std::cout << "Calculations: " << std::chrono::duration_cast<std::chrono::milliseconds>(l2 - lstart).count() << "ms" << std::endl;
 		//std::cout << "Render: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - rdrstart).count() << "ms" << std::endl;
-	}
+		//Sleep(20);
+}
 
 	window.cleanUp();
 	SDL_Quit();

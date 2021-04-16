@@ -65,6 +65,7 @@ void TreeNode::findCenter() {
 			m_com += m_particles[i]->getPos() * t_mass;
 			m_mean += m_particles[i]->getPos();
 		}
+
 		//At some point my particles are becoming junk
 		m_com /= m_mass;
 		m_mean /= m_particles.size();
@@ -93,19 +94,35 @@ void TreeNode::updateIntervals() {
 }
 
 int TreeNode::sortPointer(float x, float y) {
-	if ((x >= x_interval[0]) && (x < m_mean[0])) {
-		if ((y >= y_interval[0]) && (y < m_mean[1])) {
+	//if ((x >= x_interval[0]) && (x < m_mean[0])) {
+	//	if ((y >= y_interval[0]) && (y < m_mean[1])) {
+	//		return 0;
+	//	}
+	//	else if ((y >= m_mean[1]) && (y < y_interval[1])) {
+	//		return 2;
+	//	}
+	//}
+	//else if ((x >= m_mean[0]) && (x < x_interval[1])) {
+	//	if ((y >= y_interval[0]) && (y < m_mean[1])) {
+	//		return 1;
+	//	}
+	//	else if ((y >= m_mean[1]) && (y < y_interval[1])) {
+	//		return 3;
+	//	}
+	//}
+	if (x < m_mean[0]) {
+		if (y < m_mean[1]) {
 			return 0;
 		}
-		else if ((y >= m_mean[1]) && (y < y_interval[1])) {
+		else if (y >= m_mean[1]) {
 			return 2;
 		}
 	}
-	else if ((x >= m_mean[0]) && (x < x_interval[1])) {
-		if ((y >= y_interval[0]) && (y < m_mean[1])) {
+	else if (x >= m_mean[0]) {
+		if (y < m_mean[1]) {
 			return 1;
 		}
-		else if ((y >= m_mean[1]) && (y < y_interval[1])) {
+		else if (y >= m_mean[1]) {
 			return 3;
 		}
 	}
@@ -162,7 +179,7 @@ void TreeNode::sortParticles() {
 void TreeNode::applyFnet() {
 	if (m_particles.size() > 0) {
 		for (int i = 0; i < m_particles.size(); ++i) {
-			m_particles[i]->setFnet(m_particles[i]->getFnet() + m_fnet);
+			m_particles[i]->setFnet(m_particles[i]->getFnet() + m_fnet*(m_particles[i]->getMass()/m_mass));
 		}
 	}
 }
