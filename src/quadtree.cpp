@@ -121,12 +121,12 @@ void TreeNode::pushParticle(Particle* p_particle) {
 }
 
 void TreeNode::sortParticles() {
-	if (m_particles.size() > size) {
+	int len = m_particles.size();
+	if (len > size) {
 		// if > sqrt(total), distribute into subnodes
 		int index;
 		Particle* t_particle;
 		Eigen::Vector2f t_pos;
-		int len = m_particles.size();
 		for (int i = 0; i < len; ++i) {
 			t_particle = m_particles.back();
 			t_pos = t_particle->getPos();
