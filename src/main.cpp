@@ -33,15 +33,30 @@ int main(int argc, char* args[]) {
 		std::cout << "Glew Error" << std::endl;
 	}
 
+	std::cout << glGetString(GL_VERSION) << std::endl;
+
+	float positions[6] = {
+		-0.5f, -0.5f,
+		 0.0f, 0.5f,
+		 0.0f, -0.5f
+	};
+
+	unsigned int buffer;
+	glGenBuffers(1, &buffer); //create new buffer and store its index in buffer
+	glBindBuffer(GL_ARRAY_BUFFER, buffer); //bind/select the buffer we just made
+	//place data in the buffer and specify its size and how it will be used
+	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), &positions, GL_STATIC_DRAW); 
+	//enable vertex attribute at index zero
+	glEnableVertexAttribArray(0);
+	//define vertex attribute for our xy position
+	//index 0, 2 elements, float type, don't normalize, size in bytes, pointer to zero element (0bytes in)
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (const void*)0);
+
 	while (!glfwWindowShouldClose(window)) {
 		// render
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glBegin(GL_TRIANGLES);
-		glVertex2f(-0.5f, -0.5f);
-		glVertex2f(0.0f, 0.5f);
-		glVertex2f(-0.5f, 0.0f);
-		glEnd();
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// swap front and back buffers
 		glfwSwapBuffers(window);
