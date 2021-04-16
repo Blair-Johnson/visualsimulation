@@ -82,15 +82,15 @@ void ParticleManager::updateForces(int atr, float interaction_coeff, float min_i
 }
 
 void ParticleManager::updateStep(float dt, int gravity, float damping) {
-	for (int i = 0; i < particleList.size(); ++i) {
+	for (int i = 0; i < m_quadtree.particleList.size(); ++i) {
 		m_quadtree.particleList[i].step(0.01, gravity, damping);
 		m_quadtree.particleList[i].checkLimits(m_window->getWidth() - 1, m_window->getHeight() - 1);
 	}
 }
 
 void ParticleManager::renderParticles() {
-	for (int i = 0; i < particleList.size(); ++i) {
-		particleList[i].render();
+	for (int i = 0; i < m_quadtree.particleList.size(); ++i) {
+		m_quadtree.particleList[i].render();
 	}
 }
 
